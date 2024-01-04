@@ -1,0 +1,17 @@
+ 
+
+# Libraries
+*bin
+ 
+#  build system 
+*.sln 
+*.vcxproj*
+
+# dot files
+.*
+!*.gitignore 
+
+*exempel*
+# logging
+*.LOG
+*.log
