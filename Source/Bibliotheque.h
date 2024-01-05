@@ -18,8 +18,12 @@ struct element
     struct elementArbre *Fils;
     struct elementArbre *Frere;
 };
-struct element WOW ; 
 
+enum ETAT { PRET ,
+            ELU , 
+            BLOCK }; 
+
+ 
 typedef struct elementProcessus *TListeProcessus;
 struct elementProcessus
 {
@@ -50,12 +54,14 @@ Tree CreateTree( int p_ram );
 void CreateLife(Processus root);
 void DestroydTree();  
 
-void CreateProcessus(int ID , Tree root) ;  
+Tree CreateProcessus(  int p_PID , char p_name[_NAME_SIZE_] , int p_ram ) ;  
+int push_in_Tree(const char  p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new);
+
 void KILLProcessus(int ID);  
-
 void CreateCPU(); 
 void CreateCPU(); 
 
+void PrintTree(Tree p_root, int level); 
 
 void SHOW(); 
 
