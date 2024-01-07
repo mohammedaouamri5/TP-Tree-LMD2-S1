@@ -5,20 +5,53 @@
 
 /*
  * ----------------------------------------------------- *
- * 														*
- * 														*
+ * 							   	 						 *
+ * 							 							 *
  * ----------------------------------------------------- *
  */
 static Queue s_pret_Ferst = NULL;
 static Queue s_pret_Last = NULL;
+// * ----------------------------------------------------- *
 static Stack s_block = NULL;
-static Core  s_CPU[CORES] = {NULL,NULL,NULL,NULL};
-static Tree root = NULL;
+// * ----------------------------------------------------- *
+static Core s_CPU[CORES] = {NULL, NULL, NULL, NULL};
+static int Error = 0;
+// * ----------------------------------------------------- *
 
-Tree CreateTree(int p_ram)
+#define returnE(val) \
+	{                \
+		Error = val; \
+		return;      \
+	}
+#define Isnt_NULL(ptr) \
+	{                  \
+		if (!ptr)      \
+			exit(1);   \
+	}
+int GetError()
+{
+	// @ NOTE : 0 mean there is no Error
+	return Error;
+}
+
+signed char is_OK()
+{
+	return !GetError();
+}
+
+void Fixed()
+{
+	printf("\nFixd\n"); 
+	Error = OK;
+}
+
+// static long long * Error = malloc(sizeof(long long));
+
+Tree CreateTree(const int p_ram)
 {
 	Tree root = malloc(sizeof(Processus));
-	strcpy(root->Nom, "root");
+	Isnt_NULL(root)
+		strcpy(root->Nom, "root");
 	root->PID = 0;
 	root->Fils = NULL;
 	root->Frere = NULL;
@@ -27,13 +60,10 @@ Tree CreateTree(int p_ram)
 	return root;
 }
 
-Tree Search(Tree p_root, const char p_name_father[_NAME_SIZE_]){
+Tree Search(Tree p_root, const char p_name_father[_NAME_SIZE_])
+{
 	if (p_root == NULL)
 		return NULL;
-
-	// * printf("                    p_name_father : %s , p_root->Nom :"
-	// *" %s (strcmp(p_name_father, p_root->Nom) == %d)\n",
-	// * p_name_father, p_root->Nom, strcmp(p_name_father, p_root->Nom));
 
 	if (strcmp(p_name_father, p_root->Nom) == 0)
 		return p_root;
@@ -41,14 +71,30 @@ Tree Search(Tree p_root, const char p_name_father[_NAME_SIZE_]){
 	for (Tree I = p_root->Fils; I; I = I->Frere)
 	{
 		Tree result = Search(I, p_name_father);
-		if (result != -1 && result != 0)
-			return I;
+		if (result != 0)
+			return result;
 	}
 
 	return NULL;
 }
 
-Tree CreateProcessus(int p_PID, char p_name[_NAME_SIZE_], int p_ram){
+void ScanProcessus(Processus *p_pross)
+{
+
+	printf("\n");
+
+	printf("Name : ");
+	scanf("%s", p_pross->Nom);
+
+	printf("RAM : ");
+	scanf("%d", &(p_pross->RAM));
+
+	printf("ID : ");
+	scanf("%d", &(p_pross->PID));
+}
+
+Tree CreateProcessus(int p_PID, char p_name[_NAME_SIZE_], int p_ram)
+{
 	Tree new = malloc(sizeof(Processus));
 	new->Etat = PRET;
 	new->PID = p_PID;
@@ -59,59 +105,48 @@ Tree CreateProcessus(int p_PID, char p_name[_NAME_SIZE_], int p_ram){
 	return new;
 }
 
-void ScanProcessus(Processus *p_pross){
-
-	printf("\n");
-
-	printf("Name : ");
-	scanf("%[^\n]s", p_pross->Nom);
-
-	printf("RAM : ");
-	scanf("%d", &(p_pross->RAM));
-
-	printf("ID : ");
-	scanf("%d", &(p_pross->PID));
-}
-
-long long push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new)
+void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new)
 {
-	if (p_root == NULL)
-		exit(1);
-	if (p_new == NULL)
-		return -2;
 
-	Tree Father = Search(p_root, p_name_father);
+	Isnt_NULL(p_root)
+		Isnt_NULL(p_new)
+
+			Tree Father = Search(p_root, p_name_father);
 
 	if (Father == NULL)
-		return -2;
+		returnE(TheFatherDontExist);
 
-	// if (Father->Etat != ELU)
-	// 	return -2;
+	if (Father->Etat != ELU)
+		returnE(TheFatherIsNotElu);
 
 	p_new->Frere = Father->Fils;
 	Father->Fils = p_new;
-	
-	if(1){
+
+	if (1)
+	{
 		if (s_pret_Ferst == NULL)
 		{
 			s_pret_Ferst = malloc(sizeof(struct elementProcessus));
-			s_pret_Ferst->Info = p_new;
+			Isnt_NULL(s_pret_Ferst)
+				s_pret_Ferst->Info = p_new;
 			s_pret_Ferst->Next = NULL;
 			s_pret_Last = s_pret_Ferst;
-			return Father;
+			return;
 		}
-	
+
 		s_pret_Last->Next = malloc(sizeof(struct elementProcessus));
-		s_pret_Last->Next->Info = p_new;
+		Isnt_NULL(s_pret_Last->Next)
+
+			s_pret_Last->Next->Info = p_new;
 		s_pret_Last->Next->Next = NULL;
 		s_pret_Last = s_pret_Last->Next;
-
 	}
 
-	return Father;
+	returnE(OK);
 }
 
-void PrintProcessus(Processus p_Processus) {
+void PrintProcessus(const Processus p_Processus)
+{
 	// NOTE : you have to change that
 	printf("ID : %d |", p_Processus.PID);
 	printf("Name : %12s |", p_Processus.Nom);
@@ -119,13 +154,13 @@ void PrintProcessus(Processus p_Processus) {
 	printf("Etat : %d", p_Processus.Etat);
 }
 
-void PrintTree(Tree p_root, int level){
+void PrintTree(Tree p_root, const int level)
+{
 
-	if (p_root == NULL)
-		return NULL;
+	Isnt_NULL(p_root)
 
-	for (int i = 0; i < level; i++)
-		printf("\t");
+		for (int i = 0; i < level; i++)
+			printf("\t");
 
 	PrintProcessus(*p_root);
 
@@ -135,77 +170,231 @@ void PrintTree(Tree p_root, int level){
 		PrintTree(I, 1 + level);
 }
 
-void PrintPret()
+void PrintList(Tree_ptr ptr)
 {
-	for (Tree_ptr I = s_pret_Ferst, j = -1; I; I = I->Next)
-		printf(" %12s |", I->Info->Nom);
-	printf("   X\n");
-}
-void PrintBlock(){
-	for (Tree_ptr I = s_block , j = -1; I; I = I->Next)
+	for (Tree_ptr I = ptr; I; I = I->Next)
 		printf(" %12s |", I->Info->Nom);
 	printf("   X\n");
 }
 
+void BLOQUE(const unsigned int index)
+{
 
-
-long long BLOQUE(unsigned int index) {
 	if (index > CORES)
-		return -1;
+		returnE(TheIndexIsOutOfTheRange);
+
 
 	Tree_ptr Node = s_CPU[index];
-	s_CPU[index] = NULL; 
+	if(s_CPU[index] == NULL)
+		returnE(TherIsNoProssInTheCore);
+	s_CPU[index] = NULL;
+
 	Node->Next = s_block;
 	s_block = Node;
+	returnE(OK);
+}
+
+void PrintCPU()
+{
+	for (size_t i = 0; i < CORES; i++)
+		if (s_CPU[i] == NULL)
+			printf(" %12s (%d)|", "EMPTY", i);
+		else
+			printf(" %12s (%d)|", s_CPU[i]->Info->Nom, i);
+	printf("\n");
+}
+
+void RUN(const unsigned int index)
+{
+	if (index > CORES)
+		returnE(TheIndexIsOutOfTheRange);
+
+	if (s_CPU[index] == NULL)
+	{
+		s_CPU[index] = s_pret_Ferst;
+		s_pret_Ferst = s_pret_Ferst->Next;
+		s_CPU[index]->Info->Etat = ELU;
+		printf("%12s is Running Know\n", s_CPU[index]->Info->Nom);
+	}
+	else
+		returnE(TheCoseIsRunningAnOtherPross)
+}
+
+void Terminer(const unsigned int index)
+{
+	if (index >= CORES)
+	{
+		printf("The index %d\n" ,index)  ; 
+		returnE(TheIndexIsOutOfTheRange);
+	}
+	if (s_CPU[index] != NULL)
+	{
+		printf("Terminer %s" , s_CPU[index]->Info->Nom ); 
+		if (s_CPU[index]->Info)
+			KILLProcessus(s_CPU[index]->Info, index);
+	}
+}
+
+void SHOW(Tree p_root)
+{
+	puts("\nTree : ");
+	LINE;
+	PrintTree(p_root, 0);
+	LINE;
+
+	puts("\nPret : ");
+	LINE;
+	PrintList(s_pret_Ferst);
+	LINE;
+
+	puts("\nBlock : ");
+	LINE;
+	PrintList(s_block);
+	LINE;
+
+	puts("\nCPU : ");
+	LINE;
+	PrintCPU();
+	LINE;
+}
+
+Tree Searchbefor(Tree p_root, const char p_name[_NAME_SIZE_])
+{
+	if (p_root == NULL)
+		return NULL;
+
+	if (p_root->Frere != NULL)
+		if (strcmp(p_name, p_root->Frere->Nom) == 0)
+			return p_root;
+
+	if (p_root->Fils != NULL)
+		if (strcmp(p_name, p_root->Fils->Nom) == 0)
+			return p_root;
+
+	for (Tree I = p_root->Fils; I && I->Frere; I = I->Frere)
+	{
+		Tree result = Searchbefor(I->Frere, p_name);
+		if (result != 0)
+			return result;
+	}
+
+	return NULL;
+}
+
+inline signed char Test(const char p_name[_NAME_SIZE_], Tree ptr)
+{
+	if (ptr)
+		return !strcmp(p_name, ptr->Nom);
 	return 0;
 }
 
-
-void PrintCPU() {
-	for (size_t i = 0; i < CORES; i++) 
-		if(s_CPU[i] == NULL) 
-			printf(" %12s |" , "EMPTY" ); 	
-		else
-		printf(" %12s |", s_CPU[i]->Info->Nom); 	
-	printf("\n");
-}
-    
-
-
-long long RUN(int index) {
-	if (index > CORES)
-		return -1;
-
-	if(s_CPU[index] == NULL){
-		s_CPU[index] = s_pret_Ferst; 
-		s_pret_Ferst = s_pret_Ferst->Next;
-		printf("%12s is Running Know\n" ,		s_CPU[index]->Info->Nom );
+void GoHuntiong(const char p_name[_NAME_SIZE_])
+{
+	if (Test(p_name, s_pret_Ferst->Info))
+	{
+		Tree_ptr tmp = s_pret_Ferst->Next;
+		free(s_pret_Ferst);
+		s_pret_Ferst = tmp;
+		returnE(OK);
 	}
-  
+	if (Test(p_name, s_block->Info))
+	{
+		Tree_ptr tmp = s_block->Next;
+		free(s_block);
+		s_block = tmp;
+	}
+	for (Tree_ptr I = s_pret_Ferst, J = s_block, index = (CORES - 1), GO = 1; GO;
+		 GO = (long long)I | (long long)J | (long long)index)
+	{
+
+		if (I && Test(p_name, I->Next))
+		{
+			if (I->Next == s_pret_Last)
+			{
+				s_pret_Last = I;
+				free(I->Next);
+				s_pret_Last->Next = NULL;
+				returnE(OK);
+			}
+			else
+			{
+				Tree_ptr tmp = I->Next;
+				I->Next = I->Next->Next;
+				free(tmp);
+				returnE(OK);
+			}
+		}
+		if (Test(p_name, J->Next))
+		{
+			Tree_ptr tmp = J->Next;
+			J->Next = J->Next->Next;
+			free(tmp);
+			returnE(OK);
+		}
+		if (index && Test(p_name, s_CPU[(int)index]))
+		{
+			free(s_CPU[(int)index]);
+			s_CPU[(int)index] = NULL;
+			returnE(OK);
+		}
+
+		if (I)
+			I = I->Next;
+
+		if (J)
+			J = J->Next;
+
+		if (index)
+			index--;
+	}
 }
 
-void SHOW(Tree p_root){
-	puts("\nTree : ");
-	LINE
-	PrintTree(p_root , 0);
-    LINE
+void DestroydTree(Tree p_root)
+{
+	if (p_root == NULL)
+		return NULL;
 
-	puts("\nPret : ");
-    LINE
-	PrintPret();
-    LINE
+	for (Tree I = p_root->Fils; I; I = I->Frere)
+	{
 
-	puts("\nBlock : ");
-    LINE
-	PrintBlock();
-    LINE
-	puts("\nCPU : ");
-    LINE
-	PrintCPU();
-    LINE
-} 
+		DestroydTree(I);
+	}
+	// GoHuntiong(p_root->Nom);
+	free(p_root);
+}
 
-long long UNBLOQUE(){
+void KILLProcessus(Tree p_root, const unsigned int index)
+{
+
+	Isnt_NULL(p_root);
+	if(index >= CORES)
+	returnE(TheIndexIsOutOfTheRange);
+
+	Tree nodebefor = Searchbefor(p_root, s_CPU[index]->Info->Nom);
+
+	if (nodebefor)
+	{
+		Tree me = NULL;
+		if (nodebefor->Fils)
+		{
+			me = nodebefor->Fils;
+			nodebefor->Fils = me->Frere;
+		}
+		else
+		{
+			me = nodebefor->Frere;
+			nodebefor->Frere = me->Frere;
+		}
+		DestroydTree(me);
+	}
+
+	printf("Killing %s" , s_CPU[index]->Info->Nom ); 
+	free(s_CPU[index]);
+	s_CPU[index] = NULL;
+}
+
+long long UNBLOQUE()
+{
 
 	s_pret_Last = s_block;
 	s_block = s_block->Next;
@@ -213,29 +402,8 @@ long long UNBLOQUE(){
 	return 0;
 }
 
-
-
- 
 /*
 ◲--------◱◲--------◱◲--------◱◲--------◱◲--------◱◲--------◱◲--------◱◲--------◱◲--------◱◲--------◱
 | node 1 || node 2 || node 3 || node 4 || node 5 || node 6 || node 7 || node 8 || node 9 || node10 |
 ◳--------◰◳--------◰◳--------◰◳--------◰◳--------◰◳--------◰◳--------◰◳--------◰◳--------◰◳--------◰
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

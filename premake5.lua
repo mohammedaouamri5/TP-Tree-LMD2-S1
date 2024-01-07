@@ -6,9 +6,12 @@ workspace "TP"
         language "C"
         targetdir ("bin/%{cfg.buildcfg}")
         objdir ("bin/obj/%{cfg.buildcfg}")
-        buildlog "LOG/%{cfg.buildcfg}/TP.log" 
-    
-        files { "Source/**.h", "Source/**.c" }
+     
+        files { 
+            "Source/Bibliotheque.c",  
+            "Source/Bibliotheque.h",  
+            "Source/interface.c", 
+      }
 
         filter "system:windows"
             systemversion "latest"

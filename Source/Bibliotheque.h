@@ -7,7 +7,7 @@
 #define CORES 4 
  
 #define  LINE printf("---------------------------------------------------------------------------------------------------------------\n");
-
+ 
 
 typedef struct element *TarbreProcessus;
 #define Tree TarbreProcessus
@@ -25,6 +25,18 @@ enum ETAT { PRET ,
             ELU , 
             BLOCK }; 
 
+enum ERORR {
+	OK = 0 , 
+    TheFatherDontExist, 
+    TheFatherIsNotElu , 
+    TheCoseIsRunningAnOtherPross,
+    TherIsNoProssInTheCore,
+    TheIndexIsOutOfTheRange   
+}; 
+ 
+
+
+
  
 typedef struct elementProcessus *TListeProcessus;
 struct elementProcessus
@@ -34,35 +46,38 @@ struct elementProcessus
 };
  
 #define Tree_ptr TListeProcessus
-#define Stack Tree_ptr
-#define Queue Tree_ptr
-#define Core Tree_ptr
+#define Stack TListeProcessus
+#define Queue TListeProcessus
+#define Core TListeProcessus
 #define core int
 #define Processus struct element
   
 // the name will be a problem  
 
-long long  RUN(); 
+void RUN(const unsigned int index); 
 void PREPER(int id);  
 void Stope(); 
 
 
 // todo : binery well balensed search tree
-long long BLOQUE(unsigned int index);
-long longUNBLOQUE();
+void BLOQUE(const unsigned int index);
+long long UNBLOQUE();
 
-Tree CreateTree( int p_ram );
-void CreateLife(Processus root);
-void DestroydTree();  
+Tree CreateTree(const int p_ram );
+void DestroydTree(Tree p_root);  
 
-Tree CreateProcessus(  int p_PID , char p_name[_NAME_SIZE_] , int p_ram ) ;  
-long long push_in_Tree(const char  p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new);
+Tree CreateProcessus( ) ;  
+void push_in_Tree(const char  p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new);
+int GetError(); 
+void Fixed();
 
-void KILLProcessus(int ID);  
-void CreateCPU(); 
-void CreateCPU(); 
+signed char is_OK(); 
 
-void PrintTree(Tree p_root, int level); 
+void KILLProcessus(Tree p_root ,const  unsigned int index);  
+  
+void Terminer(const unsigned int index);
+
+void PrintTree(Tree p_root,const  int level); 
 
 void SHOW(Tree p_root); 
 
@@ -72,12 +87,7 @@ void SHOW(Tree p_root);
 
 
 
-
-
-
-
-
-
+ 
 
 
 
