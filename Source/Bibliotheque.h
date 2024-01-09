@@ -15,7 +15,7 @@ struct element
 {
     int PID;
     char Nom[_NAME_SIZE_];
-    int RAM;
+      int RAM;
     int Etat;
     Tree Fils;
     Tree Frere;
@@ -31,13 +31,12 @@ enum ERORR {
     TheFatherIsNotElu , 
     TheCoseIsRunningAnOtherPross,
     TherIsNoProssInTheCore,
-    TheIndexIsOutOfTheRange   
+    YouDiDNotBlockAnyprossus,
+    ThesIsNoProssusPret,
+    TheIndexIsOutOfTheRange   , TheNodeDontExist
 }; 
  
 
-
-
- 
 typedef struct elementProcessus *TListeProcessus;
 struct elementProcessus
 {
@@ -52,30 +51,29 @@ struct elementProcessus
 #define core int
 #define Processus struct element
   
-// the name will be a problem  
 
 void RUN(const unsigned int index); 
 void PREPER(int id);  
 void Stope(); 
 
 
-// todo : binery well balensed search tree
+
 void BLOQUE(const unsigned int index);
-long long UNBLOQUE();
+void UNBLOQUE();
 
-Tree CreateTree(const int p_ram );
+Tree CreateTree(const   int p_ram );
 void DestroydTree(Tree p_root);  
-
-Tree CreateProcessus( ) ;  
+void ScanProcessus(Processus* p_pross); 
+Tree CreateProcessus();
 void push_in_Tree(const char  p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new);
 int GetError(); 
 void Fixed();
 
 signed char is_OK(); 
 
-void KILLProcessus(Tree p_root ,const  unsigned int index);  
+void KILLProcessus(Tree p_root , const char p_name[_NAME_SIZE_]);
   
-void Terminer(const unsigned int index);
+void Terminer(const unsigned int index , Tree p_root);
 
 void PrintTree(Tree p_root,const  int level); 
 

@@ -1,32 +1,37 @@
 workspace "TP"
     configurations { "Debug", "Release", "Dist" }
-    
-    project "TP"
-        kind "ConsoleApp"
-        language "C"
-        targetdir ("bin/%{cfg.buildcfg}")
-        objdir ("bin/obj/%{cfg.buildcfg}")
-     
-        files { 
-            "Source/Bibliotheque.c",  
-            "Source/Bibliotheque.h",  
-            "Source/interface.c", 
-      }
+    platforms { "x86", "x86_64" }
 
-        filter "system:windows"
-            systemversion "latest"
-            defines { "WINDOWS" }
+project "TP"
+    kind "ConsoleApp"
+    language "C"
+    targetdir ("bin/%{cfg.platform}_%{cfg.buildcfg}")
+    objdir ("bin/obj/%{cfg.platform}_%{cfg.buildcfg}")
 
-        filter "configurations:Debug"
-            defines { "DEBUG" }
-            symbols "On"
+    files { "Source/**.h",  "Source/**.c" }
 
-        filter "configurations:Release"
-            defines { "RELEASE" }
-            optimize "On"
-            symbols "On"
+    toolset "gcc"
 
-        filter "configurations:Dist"
-            defines { "DIST" }
-            optimize "On"
-            symbols "Off"
+    filter "system:windows"
+        systemversion "latest"
+        defines { "WINDOWS" }
+
+    filter "configurations:Debug"
+        defines { "DEBUG" }
+        symbols "On"
+
+    filter "configurations:Release"
+        defines { "RELEASE" }
+        optimize "On"
+        symbols "On"
+
+    filter "configurations:Dist"
+        defines { "DIST" }
+        optimize "On"
+        symbols "Off"
+
+    filter "platforms:x86"
+        architecture "x86"
+
+    filter "platforms:x86_64"
+        architecture "x86_64"

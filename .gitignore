@@ -6,9 +6,7 @@
 #  build system 
 *.sln 
 *.vcxproj*
-*.make
-*Makefile*
-
+  
 # dot files
 .*
 !*.gitignore 
