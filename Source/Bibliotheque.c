@@ -144,7 +144,7 @@ void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new
 
 	if (Father->Etat != ELU)
 		returnE(TheFatherIsNotElu);
-	if()
+	
 	p_new->Frere = Father->Fils;
 	Father->Fils = p_new;
 
