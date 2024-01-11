@@ -27,34 +27,67 @@ enum CHOIX
 
 };
 
-#define TEST { if(GetError()){	printf("%d\n" , GetError()); exit(1);} }
+#define TEST                            \
+	{                                   \
+		if (GetError())                 \
+		{                               \
+			printf("%d\n", GetError()); \
+			exit(1);                    \
+		}                               \
+	}
 
-
-int main(int argc, char const* argv[])
+int main(int argc, char const *argv[])
 {
- 
+
 	int choix = 0;
 	Tree root = NULL;
-	 
-	
+
 	{
-		printf("how much ram of the you system wont have (in Byte) \n"
-		   ">>> ");
+		int8_t go = 0;
+		int ramsys = 0;
+		do
+		{
+			go = 0;
+			printf("how much ram of the you system wont have (in Byte) \n"
+				   ">>> ");
+			scanf("%d", &ramsys);
+
+			if (ramsys <= 0)
+			{
+				puts("[error] : The ram cant be less or equal to 0");
+				go = (int8_t)1;
+			}
+
+		} while (go);
+
+		SetRam(ramsys);
 		int ram = 0;
-		scanf("%d", &ram);
-		SetRam(ram);
+		do
+		{
+			go = 0;
+			printf("how much ram of the root wont have (in Byte) \n"
+				   ">>> ");
+			scanf("%d", &ram);
 
+			if (ram >= ramsys)
+			{
+				printf("[error] : The ram of the new pross should me less that The thee reminder RAM that equal to %d \n", ramsys);
+				go = (int8_t)1;
+			}
+			else if (ramsys <= 0)
+			{
+				puts("[error] : The ram cant be less or equal to 0");
+				go = (int8_t)1;
+			}
+		} while (go);
 
-		printf("how much ram of the root wont have (in Byte) \n"
-		   ">>> ");
-		 
-		scanf("%d", &ram);
 		root = CreateTree(ram);
 	}
 
 	int go;
 	if (1)
-		do {
+		do
+		{
 			puts("what you wont to do : ");
 			puts("                - 0 CHOIX_SHOW");
 			puts("                - 1 CHOIX_CLEAN");
@@ -70,38 +103,41 @@ int main(int argc, char const* argv[])
 			Fixed();
 
 			switch (choix) {
-
-			case CHOIX_SHOW: {
+				
+				case CHOIX_SHOW: {
 				SHOW(root);
 			}
-			break;
-			
-			case CHOIX_CLEAN: {
+				break;
+	
+				case CHOIX_CLEAN: {
 				system("cls");
 			}
-			break;
-			
-			case CHOIX_ADD: {
+				break;
+	
+				case CHOIX_ADD: {
 				Tree new = CreateProcessus();
-				do {
-					ScanProcessus(root ,new);
+				do
+				{
+					ScanProcessus(root, new);
 					printf("Name of the father : ");
 					char name_father[_NAME_SIZE_];
 					scanf("%s", name_father);
 					go = 0;
 					Fixed();
 					push_in_Tree(name_father, root, new);
-					switch (GetError()) {
+					switch (GetError())
+					{
 					case OK:
 						continue;
-						break; 
+						break;
 
 					case TheFatherDontExist:
 						printf("The fathor dont even exist  ");
 
 						printf("Do  you wont to add with defrens name (0 for no): ");
 						scanf("%d", &go);
-						if (go) {
+						if (go)
+						{
 							SHOW(root);
 							printf("whats the new name for the fother : ");
 							scanf("%s", name_father);
@@ -111,18 +147,19 @@ int main(int argc, char const* argv[])
 					case TheFatherIsNotElu:
 						printf("the fother must be  Elu so you can add ANY pross ");
 						free(new);
-						new = NULL; 
+						new = NULL;
 						break;
 					default:
 						break;
 					}
 				} while (go);
 			}
-			break;
-			
-			case CHOIX_TERMINE: {
+				break;
+	
+				case CHOIX_TERMINE: {
 
-				do {
+				do
+				{
 					go = 0;
 					Fixed();
 
@@ -132,141 +169,145 @@ int main(int argc, char const* argv[])
 					Terminer(index, root);
 					switch (GetError())
 					{
-						case TheIndexIsOutOfTheRange:
-						{
-							printf("The index is out of the reang\n"
-								"Do you wont to enter another index !? (0 for now anty thind for yes)\n"
-								">>> ");
-							scanf("%d", &go);
-						}
-						break;
-					}
-				
-				} while (go);
-			}
-			break;
-			
-			case CHOIX_RUN: {
-
-				do {
-					 
-					go = 0;
-					Fixed();
-					
-					int index;
-					printf("whats the index of the core that core that you want to run the prerssus in it : \n>>>");
-					scanf("%d", &index);
-					RUN(index);
-					switch (GetError()) {
-						
-						case TheIndexIsOutOfTheRange: {
-						   	printf("The index is out of the reang\n"
-						   		"Do you wont to enter another index !? (0 for now anty thind for yes)\n"
-						   		">>> ");
-						   	
-						   	scanf("%d", &go);
-						}
-						break;
-
-						case TheCoseIsRunningAnOtherPross: {
-							printf("You corenly running a pross in the %d core "
-								"you need to kill or block it in order to run aan other \n "
-								"Do you wont to enter another index !? (0 for now anty thind for yes)\n"
-								">>> ",
-								index);
-						
-							scanf("%d", &go);
-						}
-						break;
-					}
-				} while (go);
-			}
-			break;
-
-			case CHOIX_BLOCK: {
-				do {
-					go = 0;
-					Fixed();
-					int index;
-					printf("whats the index of the core that have the prossus you wont to block  : \n>>>");
-					scanf("%d", &index);
-					BLOQUE(index);
-					switch (GetError()) {
-						
-						case TheIndexIsOutOfTheRange: {
-
-							printf("The index is out of the reang\n"
-								"Do you wont to enter another index !? (0 for now anty thind for yes)\n"
-								">>> ",
-								index);
-							int go;
-							scanf("%d", &go);
-						}
-						break;
-
-						case TherIsNoProssInTheCore: {
-							printf("The %d code dont conain any prossus \n"
-								"Do you wont to enter another index !? (0 for now anty thind for yes)\n"
-								">>> ");
-							int go;
-							scanf("%d", &go);
-						}
-						break;
-					}
-
-				} while (go);
-			}
-			break;
-			case CHOIX_KILL : {
-				do {
-					go = 0;
-					Fixed();
-
-					char name[_NAME_SIZE_] = ""; 
-
-					printf("whats the name of the prosuss you wont to Kill : \n>>>");
-					scanf("%s", &name);
-					KILLProcessus(root, name); 
-					switch (GetError())
+					case TheIndexIsOutOfTheRange:
 					{
-					case TheNodeDontExist:
-					{
-						printf("this prosuss %s dont Exist \n"
-							"Do you wont to enter another name !? (0 for now anty thind for yes)\n"
-							">>> ");
+						printf("The index is out of the reang\n"
+							   "Do you wont to enter another index !? (0 for now anty thind for yes)\n"
+							   ">>> ");
 						scanf("%d", &go);
 					}
 					break;
 					}
 
 				} while (go);
-
 			}
-			break;
+				break;
+	
+				case CHOIX_RUN:  {
 
-			case CHOIX_UNBLOQUE: {
-				 
+				do
+				{
+
+					go = 0;
+					Fixed();
+
+					int index;
+					printf("whats the index of the core that core that you want to run the prerssus in it : \n>>>");
+					scanf("%d", &index);
+					RUN(index);
+					switch (GetError())
+					{
+
+					case TheIndexIsOutOfTheRange:
+					{
+						printf("The index is out of the reang\n"
+							   "Do you wont to enter another index !? (0 for now anty thind for yes)\n"
+							   ">>> ");
+
+						scanf("%d", &go);
+					}
+					break;
+
+					case TheCoseIsRunningAnOtherPross:
+					{
+						printf("You corenly running a pross in the %d core "
+							   "you need to kill or block it in order to run aan other \n "
+							   "Do you wont to enter another index !? (0 for now anty thind for yes)\n"
+							   ">>> ",
+							   index);
+
+						scanf("%d", &go);
+					}
+					break;
+					}
+				} while (go);
+			}
+				break;
+	
+				case CHOIX_BLOCK: {
+				do
+				{
+					go = 0;
+					Fixed();
+					int index;
+					printf("whats the index of the core that have the prossus you wont to block  : \n>>>");
+					scanf("%d", &index);
+					BLOQUE(index);
+					switch (GetError())
+					{
+
+					case TheIndexIsOutOfTheRange:
+					{
+
+						printf("The index is out of the reang\n"
+							   "Do you wont to enter another index !? (0 for now anty thind for yes)\n"
+							   ">>> ",
+							   index);
+						int go;
+						scanf("%d", &go);
+					}
+					break;
+
+					case TherIsNoProssInTheCore:
+					{
+						printf("The %d code dont conain any prossus \n"
+							   "Do you wont to enter another index !? (0 for now anty thind for yes)\n"
+							   ">>> ");
+						int go;
+						scanf("%d", &go);
+					}
+					break;
+					}
+
+				} while (go);
+			}
+				break;
+				case CHOIX_KILL: {
+				do
+				{
+					go = 0;
+					Fixed();
+
+					char name[_NAME_SIZE_] = "";
+
+					printf("whats the name of the prosuss you wont to Kill : \n>>>");
+					scanf("%s", &name);
+					KILLProcessus(root, name);
+					switch (GetError())
+					{
+					case TheNodeDontExist:
+					{
+						printf("this prosuss %s dont Exist \n"
+							   "Do you wont to enter another name !? (0 for now anty thind for yes)\n"
+							   ">>> ");
+						scanf("%d", &go);
+					}
+					break;
+					}
+
+				} while (go);
+			}
+				break;
+	
+				case CHOIX_UNBLOQUE: {
+
 				Fixed();
 				UNBLOQUE();
 				if (GetError())
 					puts("You Do not have any prosses blocked yet ");
-
 			}
-			break;
+				break;
+	
+				case CHOIX_QUIT: {
 
-			case CHOIX_QUIT : {
-			
 				exit(0);
-
 			}
-			break;
+				break;
 
-
-
-
+			
 			}
 
 		} while (1);
 
-		return 0;
+	return 0;
 }

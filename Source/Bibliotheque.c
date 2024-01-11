@@ -50,8 +50,7 @@ signed char is_OK()
 }
 
 void Fixed()
-{
-	printf("\nFixd\n");
+{ 
 	Error = OK;
 }
 
@@ -79,6 +78,7 @@ Tree CreateTree(const int p_ram)
 	root->Fils = NULL;
 	root->Frere = NULL;
 	root->RAM = p_ram;
+	root->prioriter = 0;
 	root->Etat = ELU;
 	return root;
 }
@@ -127,7 +127,7 @@ void ScanProcessus(Tree p_root, Processus *p_pross)
 	do
 	{
 		go = 0;
-		puts("Name : ");
+		printf("Name : ");
 		scanf("%s", p_pross->Nom);
 		if (SearchByName(p_root, p_pross->Nom))
 		{
@@ -139,11 +139,11 @@ void ScanProcessus(Tree p_root, Processus *p_pross)
 	do
 	{
 		go = 0;
-		puts("RAM : ");
+		printf("RAM : ");
 		scanf("%d", &(p_pross->RAM));
 		if (p_pross->RAM >= RAM)
 		{
-			printf("[error] : The ram of the new pross should me less that The thee reminder RAM that equal to %d n", RAM);
+			printf("[error] : The ram of the new pross should me less that The thee reminder RAM that equal to %d \n", RAM);
 			go = (int8_t)1;
 		}
 		else if (p_pross->RAM <= 0)
@@ -156,7 +156,7 @@ void ScanProcessus(Tree p_root, Processus *p_pross)
 	do
 	{
 		go = 0;
-		puts("prioriter : ");
+		printf("prioriter : ");
 		scanf("%d", &(p_pross->prioriter));
 		if (p_pross->prioriter < (int8_t)0)
 		{
@@ -173,11 +173,11 @@ void ScanProcessus(Tree p_root, Processus *p_pross)
 	do
 	{
 		go = 0;
-		puts("ID : ");
+		printf("ID : ");
 		scanf("%d", &(p_pross->PID));
-		if (SearchByPID(p_root, p_pross->Nom))
+		if (SearchByPID(p_root, p_pross->PID))
 		{
-			puts("[error] : You haave already this name change it ");
+			puts("[error] : You haave already this ID change it ");
 			go = 1;
 		}
 	} while (go);
@@ -227,7 +227,7 @@ void AddToPRET(Tree p_new_Tree)
 
 	for (Queue Me = s_pret_Ferst, Befor = NULL; Me;)
 	{
-		if (Me->Info->prioriter < new_Queue->Info->prioriter)
+		if (Me->Info->prioriter > new_Queue->Info->prioriter)
 		{
 
 			new_Queue->Next = Me;
@@ -418,8 +418,8 @@ void SHOW(Tree p_root)
 	PrintTree(p_root, 0);
 	LINE;
  
-	PrintList(s_pret_Ferst , "\nPret : ");
-	PrintList(s_block ,  "\nBlock : "); 
+	PrintList(s_pret_Ferst , "\nPret : \n");
+	PrintList(s_block ,  "\nBlock : \n"); 
 	PrintCPU();
 	 
 }
