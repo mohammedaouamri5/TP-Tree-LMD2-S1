@@ -209,6 +209,11 @@ Tree SearchCPU(const char p_name_father[_NAME_SIZE_])
 	}
 }
 
+
+
+
+
+ 
 void AddToPRET(Tree p_new_Tree)
 {
 
@@ -312,7 +317,7 @@ void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new
 void PrintProcessus(const Processus p_Processus)
 {
 	// NOTE : you have to change that
-	printf("ID : %d |", p_Processus.PID);
+	printf("ID : %10.d |", p_Processus.PID);
 	printf("Name : %12s |", p_Processus.Nom);
 	printf("RAM : %d |", p_Processus.RAM);
 	printf("Etat : %d |", p_Processus.Etat);
@@ -369,7 +374,8 @@ void BLOQUE(const unsigned int index)
 	s_CPU[index] = NULL;
 	Node->Next = s_block;
 	s_block = Node;
-  
+
+   
 	returnE(OK);
 }
 
@@ -472,7 +478,7 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 	}
 
 	for (Tree_ptr I = s_pret_Ferst, J = s_block, index = (CORES - 1), GO = 1; GO;
-		 GO = (long long)I | (long long)J | (long long)index)
+		 GO = (long long)I | (long long)J | (long long)(index >= 0))
 	{
 
 		if (I && Test(p_name, I->Next))
@@ -510,10 +516,9 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 			returnE(OK);
 		}
 
-		if (s_CPU[(int)index] && Test(p_name, s_CPU[(int)index]))
+		if (Test(p_name, s_CPU[(int)index]))
 		{
-			printf("loop on CPU\n");
-			RAM += s_CPU[(int)index]->Info->RAM;
+ 			RAM += s_CPU[(int)index]->Info->RAM;
 			free(s_CPU[(int)index]->Info);
 			free(s_CPU[(int)index]);
 			s_CPU[(int)index] = NULL;
@@ -524,8 +529,8 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 			I = I->Next;
 		if (J)
 			J = J->Next;
-		if (index >= 0)
-			((char)index)--;
+ 		if (index >= 0)
+			 index  = ((int)index) - 1  ;
 	}
 }
 
@@ -593,6 +598,7 @@ void Terminer(const unsigned int index, Tree p_root)
 		{
 			printf("Terminer %s\n", s_CPU[index]->Info->Nom);
 			KILLProcessus(p_root, s_CPU[index]->Info->Nom);
+			 
 			PrintCPU();
 		}
 	}
@@ -608,13 +614,59 @@ void UNBLOQUE()
 	
 	s_block->Info->Etat = PRET;
 
-	s_pret_Last->Next = s_block;
-	s_pret_Last = s_pret_Last->Next;
-	s_block = s_block->Next;
-	s_pret_Last->Next = NULL;
+
+
+
+
+
+
+
+
+
 	if (s_pret_Ferst == NULL)
-		s_pret_Ferst = s_pret_Last;
-	PrintList(s_block ,  "\ndeblcked %s : " , s_pret_Last->Info->Nom); 
+	{
+		s_pret_Ferst = s_block ;  
+		s_block = s_block->Next;
+		s_pret_Ferst->Next = NULL;
+		s_pret_Last = s_pret_Ferst;
+	PrintList(s_block ,  "\ndeblcked :  %s  \n" , s_pret_Last->Info->Nom); 
+		returnE(OK);
+
+	}
+
+	Queue new_Queue = s_block; 
+	s_block = s_block->Next;
+ 
+	for (Queue Me = s_pret_Ferst, Befor = NULL; Me;)
+	{
+		if (Me->Info->prioriter > new_Queue->Info->prioriter)
+		{
+
+			new_Queue->Next = Me;
+			if (Befor == NULL)
+			{
+				new_Queue->Next = s_pret_Ferst;
+				s_pret_Ferst = new_Queue;
+			}
+			else
+			{
+				Befor->Next = new_Queue;
+			}
+	PrintList(s_block ,  "\ndeblcked :  %s  \n" , s_pret_Last->Info->Nom); 
+
+			returnE(OK);
+		}
+		/* Next Iteration */ {
+			Befor = Me;
+			Me = Me->Next;
+		}
+	}
+
+	s_pret_Last->Next = new_Queue;
+	s_pret_Last = new_Queue;
+
+
+	PrintList(s_block ,  "\ndeblcked :  %s  \n" , s_pret_Last->Info->Nom); 
 	return 0;
 }
 

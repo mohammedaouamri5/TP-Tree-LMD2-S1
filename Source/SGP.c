@@ -164,7 +164,7 @@ int main(int argc, char const *argv[])
 					Fixed();
 
 					int index;
-					printf("whats the index of the core that thou wont to Terminer his prossus  : \n>>>");
+					printf("whats the index of the core that thou wont to Terminer his prossus  : \n>>> ");
 					scanf("%d", &index);
 					Terminer(index, root);
 					switch (GetError())
@@ -192,7 +192,7 @@ int main(int argc, char const *argv[])
 					Fixed();
 
 					int index;
-					printf("whats the index of the core that core that you want to run the prerssus in it : \n>>>");
+					printf("whats the index of the core that core that you want to run the prerssus in it : \n>>> ");
 					scanf("%d", &index);
 					RUN(index);
 					switch (GetError())
@@ -230,7 +230,7 @@ int main(int argc, char const *argv[])
 					go = 0;
 					Fixed();
 					int index;
-					printf("whats the index of the core that have the prossus you wont to block  : \n>>>");
+					printf("whats the index of the core that have the prossus you wont to block  : \n>>> ");
 					scanf("%d", &index);
 					BLOQUE(index);
 					switch (GetError())
@@ -270,7 +270,7 @@ int main(int argc, char const *argv[])
 
 					char name[_NAME_SIZE_] = "";
 
-					printf("whats the name of the prosuss you wont to Kill : \n>>>");
+					printf("whats the name of the prosuss you wont to Kill : \n>>> ");
 					scanf("%s", &name);
 					KILLProcessus(root, name);
 					switch (GetError())
