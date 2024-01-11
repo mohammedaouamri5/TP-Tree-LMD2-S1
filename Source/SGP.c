@@ -32,46 +32,7 @@ enum CHOIX
 
 int main(int argc, char const* argv[])
 {
-
-	SetRam(162); 
-	TEST Tree root = CreateTree(12);
-	TEST printf("adding WOW to root : \n");
-	TEST push_in_Tree("root", root, CreateProcessus(19, "WOW", 10 , rand()  ) );
-	TEST RUN(2);
-	TEST push_in_Tree("WOW", root, CreateProcessus(19, "W", 10 ,  rand()) );
-	TEST push_in_Tree("WOW", root, CreateProcessus(19, "1234", 10 , rand() ) );
-	TEST push_in_Tree("WOW", root, CreateProcessus(19, "12345", 10 , rand() ) );
-	TEST push_in_Tree("WOW", root, CreateProcessus(19, "123456", 10 , rand() ) );
-	TEST push_in_Tree("WOW", root, CreateProcessus(19, "1234567", 10 , rand() ) );
-	TEST RUN(3);
-	TEST push_in_Tree("W", root, CreateProcessus(19, "12**", 10 , rand() ) );
-	TEST push_in_Tree("W", root, CreateProcessus(19, "123", 10 , rand() ) );
-	// TEST BLOQUE(3);
-	TEST push_in_Tree("WOW", root, CreateProcessus(19, "1hy-e", 10 , rand() ) );
-	TEST push_in_Tree("W", root, CreateProcessus(19, "12", 10 ,rand()  )  );
-	TEST RUN(1);
-	TEST BLOQUE(1);
-	TEST RUN(0);
-	TEST RUN(1);
-	TEST BLOQUE(0);
-	TEST push_in_Tree("root", root, CreateProcessus(19, "1grt", 10 , rand() ) );
-	TEST push_in_Tree("root", root, CreateProcessus(19, "grs1", 10 ,  rand()) );
-	TEST push_in_Tree("root", root, CreateProcessus(19, "g<rs1", 10 , rand() ) );
-	TEST push_in_Tree("root", root, CreateProcessus(19, "1cq<s", 10 , rand() ) );
-	TEST push_in_Tree("root", root, CreateProcessus(19, "1c<ds", 10 , rand() )  );
-	TEST SHOW(root);
-	TEST Terminer(2, root);
-	TEST SHOW(root);
-
-	LINE LINE LINE LINE LINE LINE LINE LINE
-	puts("\t\t\t\t\t\t{OK}"); 
-	LINE  LINE LINE LINE LINE LINE LINE LINE
-	return 0;
  
- 
-}
-int macin() {
-
 	int choix = 0;
 	Tree root = NULL;
 	 

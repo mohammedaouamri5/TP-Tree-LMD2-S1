@@ -36,6 +36,7 @@ static int RAM = 0;
 	}
 
 void PrintList(Tree_ptr head , const char * fml , ...);
+void PrintCPU(); 
 
 int GetError()
 {
@@ -348,7 +349,7 @@ void PrintList(Tree_ptr ptr , const char * fml , ...)
 	LINE
 	int conter = 0;
 	for (Tree_ptr I = ptr; I; I = I->Next)
-		printf("(%d) name : %12s , Preo :  (%d)  |", conter++, I->Info->Nom, I->Info->prioriter);
+		printf("(%d) name : %12s|", conter++, I->Info->Nom );
 	printf(" total of : %d\n", conter);
 	LINE
 	
@@ -368,6 +369,7 @@ void BLOQUE(const unsigned int index)
 	s_CPU[index] = NULL;
 	Node->Next = s_block;
 	s_block = Node;
+  
 	returnE(OK);
 }
 
@@ -401,6 +403,7 @@ void RUN(const unsigned int index)
 	s_CPU[index]->Info->Etat = ELU;
 
 	printf("%12s is Running Know\n", s_CPU[index]->Info->Nom);
+	PrintCPU(); 
 }
 
 void SHOW(Tree p_root)
@@ -590,6 +593,7 @@ void Terminer(const unsigned int index, Tree p_root)
 		{
 			printf("Terminer %s\n", s_CPU[index]->Info->Nom);
 			KILLProcessus(p_root, s_CPU[index]->Info->Nom);
+			PrintCPU();
 		}
 	}
 	else
@@ -601,14 +605,16 @@ void UNBLOQUE()
 
 	if (s_block == NULL)
 		returnE(YouDiDNotBlockAnyprossus);
+	
 	s_block->Info->Etat = PRET;
+
 	s_pret_Last->Next = s_block;
 	s_pret_Last = s_pret_Last->Next;
 	s_block = s_block->Next;
 	s_pret_Last->Next = NULL;
 	if (s_pret_Ferst == NULL)
 		s_pret_Ferst = s_pret_Last;
-
+	PrintList(s_block ,  "\ndeblcked %s : " , s_pret_Last->Info->Nom); 
 	return 0;
 }
 
