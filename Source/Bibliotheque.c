@@ -53,6 +53,10 @@ void Fixed()
 	Error = OK;
 }
 
+void SetRam(const int p_ram)
+{
+	RAM = p_ram;
+}
 // static long long * Error = malloc(sizeof(long long));
 
 inline int Test(const char p_name[_NAME_SIZE_], Tree_ptr ptr)
@@ -85,7 +89,6 @@ Tree Search(Tree p_root, const char p_name_father[_NAME_SIZE_])
 	if (strcmp(p_name_father, p_root->Nom) == 0)
 		return p_root;
 
-
 	for (Tree I = p_root->Fils; I; I = I->Frere)
 	{
 		Tree result = Search(I, p_name_father);
@@ -95,7 +98,6 @@ Tree Search(Tree p_root, const char p_name_father[_NAME_SIZE_])
 
 	return NULL;
 }
-
 
 void ScanProcessus(Processus *p_pross)
 {
@@ -235,6 +237,9 @@ void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new
 		if (Father->Etat != ELU)
 			returnE(TheFatherIsNotElu);
 
+		// if(RAM < p_new->RAM)
+		// returnE(YouDontHaveEnoughtRam);
+
 		(RAM) -= p_new->RAM;
 
 		p_new->Frere = Father->Fils;
@@ -283,12 +288,10 @@ void PrintProcessus(const Processus p_Processus)
 	printf("Etat : %d", p_Processus.Etat);
 }
 
-
-
 void PrintTree(Tree p_root, const int level)
 {
 
-	Isnt_NULL(p_root); 
+	Isnt_NULL(p_root);
 
 	for (int i = 0; i < level; i++)
 		printf("\t");
@@ -297,27 +300,23 @@ void PrintTree(Tree p_root, const int level)
 
 	printf("\n");
 
-
-// Tree I = p_root->Fils; 
-// while (I)
-// {
-// 		PrintTree(I, 1 + level);
-// 	/* code */ I = I->Frere
-// }
+	// Tree I = p_root->Fils;
+	// while (I)
+	// {
+	// 		PrintTree(I, 1 + level);
+	// 	/* code */ I = I->Frere
+	// }
 
 	for (Tree I = p_root->Fils; I; I = I->Frere)
 		PrintTree(I, 1 + level);
 }
 
-
-
-
 void PrintList(Tree_ptr ptr)
 {
-	int conter = 0; 
+	int conter = 0;
 	for (Tree_ptr I = ptr; I; I = I->Next)
-		printf("(%d) name : %12s , Preo :  (%d)  |", conter++ ,I->Info->Nom, I->Info->prioriter);
-	printf(" total of : %d\n" , conter);
+		printf("(%d) name : %12s , Preo :  (%d)  |", conter++, I->Info->Nom, I->Info->prioriter);
+	printf(" total of : %d\n", conter);
 }
 
 void BLOQUE(const unsigned int index)
@@ -366,6 +365,12 @@ void RUN(const unsigned int index)
 
 void SHOW(Tree p_root)
 {
+	
+	LINE;
+	printf("\nRAM : %d\n",RAM);
+	LINE;
+      
+
 	puts("\nTree : ");
 	LINE;
 	PrintTree(p_root, 0);
@@ -411,12 +416,15 @@ static Tree Searchbefor(Tree p_root, const char p_name[_NAME_SIZE_])
 	return NULL;
 }
 
+ 
 static void GoHuntiong(const char p_name[_NAME_SIZE_])
 {
 
 	if (s_pret_Ferst && Test(p_name, s_pret_Ferst))
 	{
 		Tree_ptr tmp = s_pret_Ferst->Next;
+		RAM += s_pret_Ferst->Info->RAM;  
+		free(s_pret_Ferst->Info);
 		free(s_pret_Ferst);
 		s_pret_Ferst = tmp;
 		returnE(OK);
@@ -424,7 +432,9 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 
 	if (s_block && Test(p_name, s_block))
 	{
+		RAM += s_pret_Ferst->Info->RAM;  
 		Tree_ptr tmp = s_block->Next;
+		free(s_block->Info);
 		free(s_block);
 		s_block = tmp;
 		returnE(OK);
@@ -440,6 +450,8 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 			if (I->Next == s_pret_Last)
 			{
 				s_pret_Last = I;
+				RAM += I->Next->Info->RAM;  
+				free(I->Next->Info);
 				free(I->Next);
 				s_pret_Last->Next = NULL;
 				returnE(OK);
@@ -449,6 +461,8 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 			{
 				Tree_ptr tmp = I->Next;
 				I->Next = I->Next->Next;
+				RAM += tmp->Info->RAM;  
+				free(tmp->Info);
 				free(tmp);
 				returnE(OK);
 			}
@@ -459,6 +473,8 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 
 			Tree_ptr tmp = J->Next;
 			J->Next = J->Next->Next;
+			RAM += tmp->Info->RAM;  
+			free(tmp->Info);
 			free(tmp);
 			returnE(OK);
 		}
@@ -466,22 +482,17 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 		if (s_CPU[(int)index] && Test(p_name, s_CPU[(int)index]))
 		{
 			printf("loop on CPU\n");
-
+			RAM += s_CPU[(int)index]->Info->RAM;  
+			free(s_CPU[(int)index]->Info);
 			free(s_CPU[(int)index]);
 			s_CPU[(int)index] = NULL;
 			returnE(OK);
 		}
 
-		if (I)
-			I = I->Next;
-
-		if (J)
-			J = J->Next;
-
-		if (index >= 0)
-		{
-			((char)index)--;
-		}
+		if (I) 						I = I->Next;
+		if (J) 						J = J->Next;
+		if (index >= 0) 			((char)index)--;
+		 
 	}
 }
 
@@ -544,13 +555,13 @@ void Terminer(const unsigned int index, Tree p_root)
 	}
 
 	if (s_CPU[index] != NULL)
-	{
-		if (s_CPU[index]->Info)
+		{if (s_CPU[index]->Info)
 		{
 			printf("Terminer %s\n", s_CPU[index]->Info->Nom);
 			KILLProcessus(p_root, s_CPU[index]->Info->Nom);
 		}
-	}
+	}else
+	returnE(YouDontHaveAnyprossusHere); 
 }
 
 void UNBLOQUE()

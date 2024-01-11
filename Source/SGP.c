@@ -30,8 +30,10 @@ enum CHOIX
 #define TEST { if(GetError()){	printf("%d\n" , GetError()); exit(1);} }
 
 
-int ma1in(int argc, char const* argv[])
+int main(int argc, char const* argv[])
 {
+
+	SetRam(162); 
 	TEST Tree root = CreateTree(12);
 	TEST printf("adding WOW to root : \n");
 	TEST push_in_Tree("root", root, CreateProcessus(19, "WOW", 10 , rand()  ) );
@@ -41,8 +43,8 @@ int ma1in(int argc, char const* argv[])
 	TEST push_in_Tree("WOW", root, CreateProcessus(19, "12345", 10 , rand() ) );
 	TEST push_in_Tree("WOW", root, CreateProcessus(19, "123456", 10 , rand() ) );
 	TEST push_in_Tree("WOW", root, CreateProcessus(19, "1234567", 10 , rand() ) );
-	TEST push_in_Tree("W", root, CreateProcessus(19, "12**", 10 , rand() ) );
 	TEST RUN(3);
+	TEST push_in_Tree("W", root, CreateProcessus(19, "12**", 10 , rand() ) );
 	TEST push_in_Tree("W", root, CreateProcessus(19, "123", 10 , rand() ) );
 	TEST BLOQUE(3);
 	TEST push_in_Tree("WOW", root, CreateProcessus(19, "1hy-e", 10 , rand() ) );
@@ -60,6 +62,13 @@ int ma1in(int argc, char const* argv[])
 	TEST SHOW(root);
 	TEST Terminer(2, root);
 	TEST SHOW(root);
+	LINE
+	LINE
+	LINE
+	puts("\t\t\t\t\t{OK}"); 
+	LINE
+	LINE
+	LINE
 	return 0;
 	printf("Eroor = %d \n", GetError());
 	UNBLOQUE(2);
@@ -70,7 +79,7 @@ int ma1in(int argc, char const* argv[])
 
 	return 0;
 }
-int main() {
+int macin() {
 
 	int choix = 0;
 	Tree root = NULL;
