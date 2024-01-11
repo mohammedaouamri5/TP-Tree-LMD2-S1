@@ -10,7 +10,7 @@
 # dot files
 .*
 !*.gitignore 
-
+!Vendor/*
 *exempel*
 # logging
 *.LOG

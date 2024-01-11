@@ -11,11 +11,14 @@
 
 typedef struct element *TarbreProcessus;
 #define Tree TarbreProcessus
+
+#define  int8_t signed char  
 struct element
 {
     int PID;
     char Nom[_NAME_SIZE_];
-      int RAM;
+    int8_t prioriter; 
+    int RAM;
     int Etat;
     Tree Fils;
     Tree Frere;
