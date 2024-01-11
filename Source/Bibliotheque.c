@@ -2,6 +2,7 @@
 #include "Bibliotheque.h"
 #include "string.h"
 #include "stdio.h"
+#include <stdarg.h>
 
 /*
  * ----------------------------------------------------- *
@@ -34,7 +35,7 @@ static int RAM = 0;
 		}                      \
 	}
 
-void PrintList(Tree_ptr head);
+void PrintList(Tree_ptr head , const char * fml , ...);
 
 int GetError()
 {
@@ -81,32 +82,58 @@ Tree CreateTree(const int p_ram)
 	return root;
 }
 
-Tree Search(Tree p_root, const char p_name_father[_NAME_SIZE_])
+Tree SearchByName(Tree p_root, const char p_name[_NAME_SIZE_])
 {
 	if (p_root == NULL)
 		return NULL;
 
-	if (strcmp(p_name_father, p_root->Nom) == 0)
+	if (strcmp(p_name, p_root->Nom) == 0)
 		return p_root;
 
 	for (Tree I = p_root->Fils; I; I = I->Frere)
 	{
-		Tree result = Search(I, p_name_father);
+		Tree result = SearchByName(I, p_name);
 		if (result != NULL)
 			return result;
 	}
 
 	return NULL;
 }
+Tree SearchByPID(Tree p_root, int p_PID)
+{
 
-void ScanProcessus(Processus *p_pross)
+	if (p_root == NULL)
+		return NULL;
+
+	if (p_PID == p_root->PID)
+		return p_root;
+
+	for (Tree I = p_root->Fils; I; I = I->Frere)
+	{
+		Tree result = SearchByPID(I, p_PID);
+		if (result != NULL)
+			return result;
+	}
+	return NULL;
+}
+
+void ScanProcessus(Tree p_root, Processus *p_pross)
 {
 
 	puts("");
 	int8_t go;
 
-	puts("Name : ");
-	scanf("%s", p_pross->Nom);
+	do
+	{
+		go = 0;
+		puts("Name : ");
+		scanf("%s", p_pross->Nom);
+		if (SearchByName(p_root, p_pross->Nom))
+		{
+			puts("[error] : You haave already this name change it ");
+			go = 1;
+		}
+	} while (go);
 
 	do
 	{
@@ -142,8 +169,17 @@ void ScanProcessus(Processus *p_pross)
 		}
 	} while (go);
 
-	puts("ID : ");
-	scanf("%d", &(p_pross->PID));
+	do
+	{
+		go = 0;
+		puts("ID : ");
+		scanf("%d", &(p_pross->PID));
+		if (SearchByPID(p_root, p_pross->Nom))
+		{
+			puts("[error] : You haave already this name change it ");
+			go = 1;
+		}
+	} while (go);
 }
 
 Tree CreateProcessus(int p_PID, char p_name[_NAME_SIZE_], int p_ram, signed char p_prioriter)
@@ -166,8 +202,8 @@ Tree SearchCPU(const char p_name_father[_NAME_SIZE_])
 	{
 		if (s_CPU[i])
 		{
-			Isnt_NULL(s_CPU[i]->Info)
-				Test(s_CPU[i]->Info->Nom, p_name_father);
+			Isnt_NULL(s_CPU[i]->Info);
+			Test(s_CPU[i]->Info->Nom, p_name_father);
 		}
 	}
 }
@@ -196,14 +232,11 @@ void AddToPRET(Tree p_new_Tree)
 			new_Queue->Next = Me;
 			if (Befor == NULL)
 			{
-
-				printf("add too ferst \n");
 				new_Queue->Next = s_pret_Ferst;
 				s_pret_Ferst = new_Queue;
 			}
 			else
 			{
-				printf("add mee mous \n");
 				Befor->Next = new_Queue;
 			}
 
@@ -215,11 +248,8 @@ void AddToPRET(Tree p_new_Tree)
 		}
 	}
 
-	printf("add f la5er  \n");
-	printf("THE  last %s : ", s_pret_Last->Info->Nom);
 	s_pret_Last->Next = new_Queue;
 	s_pret_Last = new_Queue;
-	printf("--> THE  last %s : \n", s_pret_Last->Info->Nom);
 }
 
 void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new)
@@ -229,16 +259,16 @@ void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new
 	Isnt_NULL(p_new);
 
 	/*Add To The Tree*/ {
-		Tree Father = Search(p_root, p_name_father);
+		Tree Father = SearchByName(p_root, p_name_father);
 
 		if (Father == NULL)
 			returnE(TheFatherDontExist);
 
 		if (Father->Etat != ELU)
 			returnE(TheFatherIsNotElu);
-
-		// if(RAM < p_new->RAM)
-		// returnE(YouDontHaveEnoughtRam);
+		if (1)
+			if (RAM < p_new->RAM)
+				returnE(YouDontHaveEnoughtRam);
 
 		(RAM) -= p_new->RAM;
 
@@ -246,9 +276,8 @@ void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new
 		Father->Fils = p_new;
 	}
 
-	printf("\nAdding %s : \n", p_new->Nom);
-
-	if (0)
+ 
+	if (1)
 	{
 		AddToPRET(p_new);
 	}
@@ -272,9 +301,9 @@ void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new
 			s_pret_Last = s_pret_Last->Next;
 		}
 	}
-	LINE;
-	PrintList(s_pret_Ferst);
-	LINE;
+
+	PrintList(s_pret_Ferst , "\nAdding %s : \n", p_new->Nom);
+	
 
 	returnE(OK);
 }
@@ -285,7 +314,8 @@ void PrintProcessus(const Processus p_Processus)
 	printf("ID : %d |", p_Processus.PID);
 	printf("Name : %12s |", p_Processus.Nom);
 	printf("RAM : %d |", p_Processus.RAM);
-	printf("Etat : %d", p_Processus.Etat);
+	printf("Etat : %d |", p_Processus.Etat);
+	printf("Prioriter : %d", p_Processus.prioriter);
 }
 
 void PrintTree(Tree p_root, const int level)
@@ -300,23 +330,28 @@ void PrintTree(Tree p_root, const int level)
 
 	printf("\n");
 
-	// Tree I = p_root->Fils;
-	// while (I)
-	// {
-	// 		PrintTree(I, 1 + level);
-	// 	/* code */ I = I->Frere
-	// }
-
 	for (Tree I = p_root->Fils; I; I = I->Frere)
 		PrintTree(I, 1 + level);
 }
 
-void PrintList(Tree_ptr ptr)
+void PrintList(Tree_ptr ptr , const char * fml , ...)
 {
+ 
+
+    // Print formatted string using variable arguments
+    va_list args;
+    va_start(args, fml);
+    vprintf(fml, args);
+    va_end(args);
+
+ 
+	LINE
 	int conter = 0;
 	for (Tree_ptr I = ptr; I; I = I->Next)
 		printf("(%d) name : %12s , Preo :  (%d)  |", conter++, I->Info->Nom, I->Info->prioriter);
 	printf(" total of : %d\n", conter);
+	LINE
+	
 }
 
 void BLOQUE(const unsigned int index)
@@ -328,6 +363,7 @@ void BLOQUE(const unsigned int index)
 	if (s_CPU[index] == NULL)
 		returnE(TherIsNoProssInTheCore);
 
+	s_CPU[index]->Info->Etat = BLOCK;
 	Tree_ptr Node = s_CPU[index];
 	s_CPU[index] = NULL;
 	Node->Next = s_block;
@@ -337,12 +373,16 @@ void BLOQUE(const unsigned int index)
 
 void PrintCPU()
 {
+	puts("\nCPU : ");
+	LINE;
+
 	for (size_t i = 0; i < CORES; i++)
 		if (s_CPU[i] == NULL)
 			printf(" %12s (%d)|", "EMPTY", i);
 		else
 			printf(" %12s (%d)|", s_CPU[i]->Info->Nom, i);
 	printf("\n");
+	LINE;
 }
 
 void RUN(const unsigned int index)
@@ -365,31 +405,20 @@ void RUN(const unsigned int index)
 
 void SHOW(Tree p_root)
 {
-	
+
 	LINE;
-	printf("\nRAM : %d\n",RAM);
+	printf("\nRAM : %d\n", RAM);
 	LINE;
-      
 
 	puts("\nTree : ");
 	LINE;
 	PrintTree(p_root, 0);
 	LINE;
-
-	puts("\nPret : ");
-	LINE;
-	PrintList(s_pret_Ferst);
-	LINE;
-
-	puts("\nBlock : ");
-	LINE;
-	PrintList(s_block);
-	LINE;
-
-	puts("\nCPU : ");
-	LINE;
+ 
+	PrintList(s_pret_Ferst , "\nPret : ");
+	PrintList(s_block ,  "\nBlock : "); 
 	PrintCPU();
-	LINE;
+	 
 }
 
 static Tree Searchbefor(Tree p_root, const char p_name[_NAME_SIZE_])
@@ -416,14 +445,13 @@ static Tree Searchbefor(Tree p_root, const char p_name[_NAME_SIZE_])
 	return NULL;
 }
 
- 
 static void GoHuntiong(const char p_name[_NAME_SIZE_])
 {
 
 	if (s_pret_Ferst && Test(p_name, s_pret_Ferst))
 	{
 		Tree_ptr tmp = s_pret_Ferst->Next;
-		RAM += s_pret_Ferst->Info->RAM;  
+		RAM += s_pret_Ferst->Info->RAM;
 		free(s_pret_Ferst->Info);
 		free(s_pret_Ferst);
 		s_pret_Ferst = tmp;
@@ -432,7 +460,7 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 
 	if (s_block && Test(p_name, s_block))
 	{
-		RAM += s_pret_Ferst->Info->RAM;  
+		RAM += s_pret_Ferst->Info->RAM;
 		Tree_ptr tmp = s_block->Next;
 		free(s_block->Info);
 		free(s_block);
@@ -450,7 +478,7 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 			if (I->Next == s_pret_Last)
 			{
 				s_pret_Last = I;
-				RAM += I->Next->Info->RAM;  
+				RAM += I->Next->Info->RAM;
 				free(I->Next->Info);
 				free(I->Next);
 				s_pret_Last->Next = NULL;
@@ -461,7 +489,7 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 			{
 				Tree_ptr tmp = I->Next;
 				I->Next = I->Next->Next;
-				RAM += tmp->Info->RAM;  
+				RAM += tmp->Info->RAM;
 				free(tmp->Info);
 				free(tmp);
 				returnE(OK);
@@ -473,7 +501,7 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 
 			Tree_ptr tmp = J->Next;
 			J->Next = J->Next->Next;
-			RAM += tmp->Info->RAM;  
+			RAM += tmp->Info->RAM;
 			free(tmp->Info);
 			free(tmp);
 			returnE(OK);
@@ -482,17 +510,19 @@ static void GoHuntiong(const char p_name[_NAME_SIZE_])
 		if (s_CPU[(int)index] && Test(p_name, s_CPU[(int)index]))
 		{
 			printf("loop on CPU\n");
-			RAM += s_CPU[(int)index]->Info->RAM;  
+			RAM += s_CPU[(int)index]->Info->RAM;
 			free(s_CPU[(int)index]->Info);
 			free(s_CPU[(int)index]);
 			s_CPU[(int)index] = NULL;
 			returnE(OK);
 		}
 
-		if (I) 						I = I->Next;
-		if (J) 						J = J->Next;
-		if (index >= 0) 			((char)index)--;
-		 
+		if (I)
+			I = I->Next;
+		if (J)
+			J = J->Next;
+		if (index >= 0)
+			((char)index)--;
 	}
 }
 
@@ -555,13 +585,15 @@ void Terminer(const unsigned int index, Tree p_root)
 	}
 
 	if (s_CPU[index] != NULL)
-		{if (s_CPU[index]->Info)
+	{
+		if (s_CPU[index]->Info)
 		{
 			printf("Terminer %s\n", s_CPU[index]->Info->Nom);
 			KILLProcessus(p_root, s_CPU[index]->Info->Nom);
 		}
-	}else
-	returnE(YouDontHaveAnyprossusHere); 
+	}
+	else
+		returnE(YouDontHaveAnyprossusHere);
 }
 
 void UNBLOQUE()
@@ -569,7 +601,7 @@ void UNBLOQUE()
 
 	if (s_block == NULL)
 		returnE(YouDiDNotBlockAnyprossus);
-
+	s_block->Info->Etat = PRET;
 	s_pret_Last->Next = s_block;
 	s_pret_Last = s_pret_Last->Next;
 	s_block = s_block->Next;

@@ -60,19 +60,19 @@ struct elementProcessus
 #define Processus struct element
 
 void RUN(const unsigned int index);
-void PREPER(int id);
-void Stope();
+
 
 void BLOQUE(const unsigned int index);
 void UNBLOQUE();
 
 Tree CreateTree(const int p_ram);
 void DestroydTree(Tree p_root);
-void ScanProcessus(Processus *p_pross);
+void ScanProcessus(Tree p_root  , Processus *p_pross);
 Tree CreateProcessus();
 void push_in_Tree(const char p_name_father[_NAME_SIZE_], Tree p_root, Tree p_new);
 int GetError();
 void Fixed();
+void SetRam(const int p_ram);
 
 signed char is_OK();
 

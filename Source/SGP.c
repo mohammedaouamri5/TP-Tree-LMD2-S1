@@ -46,7 +46,7 @@ int main(int argc, char const* argv[])
 	TEST RUN(3);
 	TEST push_in_Tree("W", root, CreateProcessus(19, "12**", 10 , rand() ) );
 	TEST push_in_Tree("W", root, CreateProcessus(19, "123", 10 , rand() ) );
-	TEST BLOQUE(3);
+	// TEST BLOQUE(3);
 	TEST push_in_Tree("WOW", root, CreateProcessus(19, "1hy-e", 10 , rand() ) );
 	TEST push_in_Tree("W", root, CreateProcessus(19, "12", 10 ,rand()  )  );
 	TEST RUN(1);
@@ -62,35 +62,33 @@ int main(int argc, char const* argv[])
 	TEST SHOW(root);
 	TEST Terminer(2, root);
 	TEST SHOW(root);
-	LINE
-	LINE
-	LINE
-	puts("\t\t\t\t\t{OK}"); 
-	LINE
-	LINE
-	LINE
-	return 0;
-	printf("Eroor = %d \n", GetError());
-	UNBLOQUE(2);
-	RUN(0);
-	printf("\n\n\n");
-	SHOW(root);
 
-
+	LINE LINE LINE LINE LINE LINE LINE LINE
+	puts("\t\t\t\t\t\t{OK}"); 
+	LINE  LINE LINE LINE LINE LINE LINE LINE
 	return 0;
+ 
+ 
 }
 int macin() {
 
 	int choix = 0;
 	Tree root = NULL;
-
-	printf("how much ram you wont have (in Byte) \n"
-		   ">>> ");
+	 
 	
 	{
+		printf("how much ram of the you system wont have (in Byte) \n"
+		   ">>> ");
 		int ram = 0;
 		scanf("%d", &ram);
-		root = CreateTree(16);
+		SetRam(ram);
+
+
+		printf("how much ram of the root wont have (in Byte) \n"
+		   ">>> ");
+		 
+		scanf("%d", &ram);
+		root = CreateTree(ram);
 	}
 
 	int go;
@@ -124,19 +122,18 @@ int macin() {
 			
 			case CHOIX_ADD: {
 				Tree new = CreateProcessus();
-				ScanProcessus(new);
-				printf("Name of the father : ");
-				char name_father[_NAME_SIZE_];
-				scanf("%s", name_father);
-
 				do {
+					ScanProcessus(root ,new);
+					printf("Name of the father : ");
+					char name_father[_NAME_SIZE_];
+					scanf("%s", name_father);
 					go = 0;
 					Fixed();
 					push_in_Tree(name_father, root, new);
 					switch (GetError()) {
 					case OK:
 						continue;
-						break;
+						break; 
 
 					case TheFatherDontExist:
 						printf("The fathor dont even exist  ");
@@ -153,7 +150,7 @@ int macin() {
 					case TheFatherIsNotElu:
 						printf("the fother must be  Elu so you can add ANY pross ");
 						free(new);
-						new = NULL;
+						new = NULL; 
 						break;
 					default:
 						break;
@@ -295,6 +292,14 @@ int macin() {
 
 			}
 			break;
+
+			case CHOIX_QUIT : {
+			
+				exit(0);
+
+			}
+			break;
+
 
 
 
